@@ -5,10 +5,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Objects;
-
 
 /**
  * This class is used for ...
@@ -25,8 +22,8 @@ public class GUI extends JFrame {
             +"\n la primera lista y cuales no, por cada nivel el numero de"
             +"\n palabras se ira duplicando consecutivamente. !SUERTE¡";
 
-    private JButton Instructions,Exit,ContinueButton,NewGame,OK,Back,BackButton,SelectButton,StartGame;
-    private JPanel OpeningPanel,GamePanel,SelectUser,Words,PanelGame;
+    private JButton Instructions,Exit,ContinueButton,NewGame,OK,Back,BackButton,SelectButton,StartGame,Continue,Yes,No;
+    private JPanel OpeningPanel,GamePanel,SelectUser,Words,PanelGame,OptionPanel,Componente2;
     private JLabel labelUsername,Ad,Level,Time,WordLabel;
     private JTextField Box;
 
@@ -41,21 +38,20 @@ public class GUI extends JFrame {
     public String name;
     private Timer timer;
     private int counter,fase;
+    private JTextArea Message = new JTextArea();
 
-
-    /**
-     * Constructor of GUI class
-     */
+    /** Constructor of GUI class */
     public GUI(){
         initGUI();
-
-        //Configuración por defecto del JFrame
-        this.setTitle("I know that word");
-        this.setSize(200,100);
+        this.setTitle("I KNOW THAT WORD");
+        this.setUndecorated(true);
+        //this.setBackground(new Color(255,255,255,0));
         this.pack();
         this.setResizable(false);
         this.setVisible(true);
+        this.setLocationRelativeTo(null);
     }
+
     /**
      * This method is used to set up the default JComponent Configuration,
      * create Listener and control Objects used for the GUI class
@@ -65,31 +61,25 @@ public class GUI extends JFrame {
         this.setLayout(new GridBagLayout());
         constraints = new GridBagConstraints();
 
-        /**
-         * Create Listener Object and Control Object
-         */
+        /** Create Listener Object and Control Object */
         escucha = new Escucha();
 
-        /**
-         * tittle
-         */
-        header = new Header("I KNOW THAT WORD", new Color(135, 7, 122));
-        constraints.gridx = 1;
+        /** tittle */
+        header = new Header("I KNOW THAT WORD", Color.BLACK);
+        constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.fill = GridBagConstraints.CENTER;
+        constraints.gridwidth = 0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         this.add(header, constraints);
 
-        /**
-         * help button
-         */
+        /** help button */
         Instructions = new JButton("Como jugar");
         Instructions.addActionListener(escucha);
         Instructions.setPreferredSize(new Dimension(110, 30));
         Instructions.setCursor(new Cursor(Cursor.HAND_CURSOR));
         Instructions.setBorder(new EmptyBorder(100, 0, 100, 0));
         constraints.gridx = 0;
-        constraints.gridy = 0;
+        constraints.gridy = 1;
         constraints.gridwidth = 1;
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -105,8 +95,8 @@ public class GUI extends JFrame {
         Exit.setPreferredSize(new Dimension(110, 30));
         Exit.setCursor(new Cursor(Cursor.HAND_CURSOR));
         Exit.setBorder(new EmptyBorder(100, 0, 100, 0));
-        constraints.gridx = 2;
-        constraints.gridy = 0;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
         constraints.gridwidth = 1;
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.LINE_END;
@@ -128,9 +118,7 @@ public class GUI extends JFrame {
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.CENTER;
         this.add(OpeningPanel, constraints);
-        /**
-         * new game button
-         */
+        /** new game button */
         NewGame = new JButton("Nuevo juego");
         NewGame.addActionListener(escucha);
         NewGame.setPreferredSize(new Dimension(110, 30));
@@ -143,9 +131,7 @@ public class GUI extends JFrame {
         layout.anchor = GridBagConstraints.CENTER;
         OpeningPanel.add(NewGame, layout);
 
-        /**
-         * continue game button
-         */
+        /** continue game button */
         ContinueButton = new JButton("Continuar");
         ContinueButton.addActionListener(escucha);
         ContinueButton.setPreferredSize(new Dimension(110, 30));
@@ -157,13 +143,14 @@ public class GUI extends JFrame {
         layout.anchor = GridBagConstraints.CENTER;
         OpeningPanel.add(ContinueButton, layout);
     }
+
     public void NewGamePanel(){
         GamePanel = new JPanel();
         GamePanel.setLayout(new GridBagLayout());
         layoutPanelGame = new GridBagConstraints(); // PanelGame layout component
         GamePanel.setPreferredSize(new Dimension(600, 400));
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.CENTER;
@@ -216,6 +203,7 @@ public class GUI extends JFrame {
         revalidate();
         repaint();
     }
+
     public void LoadGame(){
         SelectUser = new JPanel();
         SelectUser.setLayout(new GridBagLayout());
@@ -295,7 +283,7 @@ public class GUI extends JFrame {
         this.add(SelectUser, constraints);
 
         layoutLoadGame = new GridBagConstraints();
-        Ad = new JLabel("Bienvenido "+name+" es hora de poner a prueba tu capacidad de memorizar");
+        Ad = new JLabel("Bienvenido "+name+" es hora de memorizar");
         Ad.setPreferredSize(new Dimension(500, 200));
         layoutLoadGame.gridx = 1;
         layoutLoadGame.gridy = 1;
@@ -316,7 +304,8 @@ public class GUI extends JFrame {
         layoutLoadGame.anchor = GridBagConstraints.CENTER;
         SelectUser.add(StartGame, layoutLoadGame);
     }
-    public void ComponentesPanelGame() {
+
+    public void Components() {
 
         PanelGame = new JPanel();
         PanelGame.setLayout(new GridBagLayout());
@@ -374,6 +363,149 @@ public class GUI extends JFrame {
         revalidate();
         repaint();
     }
+    public void Instructions() {
+        
+        Message.setText("\n               A continuación se mostraran en panatalla unas palabras \n   Tendras que escoger Si (si estaban en las palabras anteriores) \n   " +
+                "Y No (si no estaban en las palabras anteriores)");
+        Message.setEditable(false);
+        Message.setLineWrap(true);
+        Message.setWrapStyleWord(true);
+        Message.setOpaque(true);
+        Message.setPreferredSize(new Dimension(405, 155));
+        Message.setFont(new Font("Impact", Font.PLAIN, 27));
+        layoutLoadGame.gridx = 0;
+        layoutLoadGame.gridy = 0;
+        layoutLoadGame.gridwidth = 1;
+        layoutLoadGame.fill = GridBagConstraints.NONE;
+        layoutLoadGame.anchor = GridBagConstraints.CENTER;
+        PanelGame.add(Message, layoutLoadGame);
+
+        Continue = new JButton("Continuar");
+        Continue.addActionListener(escucha);
+        Continue.setPreferredSize(new Dimension(200, 65));
+        Continue.setBorderPainted(false);
+        Continue.setContentAreaFilled(false);
+        layoutLoadGame.gridx = 0;
+        layoutLoadGame.gridy = 1;
+        layoutLoadGame.gridwidth = 1;
+        layoutLoadGame.fill = GridBagConstraints.NONE;
+        layoutLoadGame.anchor = GridBagConstraints.LINE_END;
+        PanelGame.add(Continue, layoutLoadGame);
+        revalidate();
+        repaint();
+    }
+
+    public void Components2() {
+        Componente2 = new JPanel();
+        Componente2.setLayout(new GridBagLayout());
+        layoutLoadGame = new GridBagConstraints(); // PanelGame layout component
+        Componente2.setPreferredSize(new Dimension(600, 400));
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 2;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.CENTER;
+        this.add(Componente2, constraints);
+
+        Level = new JLabel("NIVEL: " + Integer.toString(controller.getNivelActual()));
+        Level.setFont(new Font("Impact", Font.PLAIN, 27));
+        layoutLoadGame.gridx = 0;
+        layoutLoadGame.gridy = 0;
+        layoutLoadGame.gridwidth = 1;
+        layoutLoadGame.fill = GridBagConstraints.NONE;
+        layoutLoadGame.anchor = GridBagConstraints.LINE_START;
+        Componente2.add(Level, layoutLoadGame);
+
+        Time = new JLabel("00:00");
+        Time.setFont(new Font("Impact", Font.PLAIN, 27));
+        layoutLoadGame.gridx = 4;
+        layoutLoadGame.gridy = 0;
+        layoutLoadGame.gridwidth = 1;
+        layoutLoadGame.fill = GridBagConstraints.NONE;
+        layoutLoadGame.anchor = GridBagConstraints.LINE_END;
+        Componente2.add(Time, layoutLoadGame);
+
+        Words = new JPanel(new GridBagLayout());
+        GridBagConstraints layoutPanelPalabras = new GridBagConstraints();
+        Words.setPreferredSize(new Dimension(500, 300));
+        Words.setOpaque(false);
+        layoutLoadGame.gridx = 0;
+        layoutLoadGame.gridy = 1;
+        layoutLoadGame.gridwidth = 2;
+        layoutLoadGame.fill = GridBagConstraints.BOTH;
+        layoutLoadGame.anchor = GridBagConstraints.CENTER;
+        Componente2.add(Words, layoutLoadGame);
+
+        /*Cambiar nombre variable*/ WordLabel = new JLabel();
+        WordLabel.setFont(new Font("Impact", Font.PLAIN, 60));
+        layoutPanelPalabras.gridx = 0;
+        layoutPanelPalabras.gridy = 0;
+        layoutPanelPalabras.gridwidth = 1;
+        layoutPanelPalabras.fill = GridBagConstraints.NONE;
+        layoutPanelPalabras.anchor = GridBagConstraints.CENTER;
+        Words.add(WordLabel, layoutPanelPalabras);
+
+        OptionPanel = new JPanel();
+        GridBagConstraints layoutOptionPanel = new GridBagConstraints();
+        OptionPanel.setPreferredSize(new Dimension(500, 100));
+        OptionPanel.setOpaque(false);
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 2;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.CENTER;
+        Componente2.add(OptionPanel, constraints);
+
+        Yes = new JButton("Si");
+        Yes.addActionListener(escucha);
+        Yes.setBorderPainted(false);
+        Yes.setContentAreaFilled(false);
+        layoutOptionPanel.gridx = 0;
+        layoutOptionPanel.gridy = 2;
+        layoutOptionPanel.gridwidth = 1;
+        layoutOptionPanel.fill = GridBagConstraints.NONE;
+        layoutOptionPanel.anchor = GridBagConstraints.LINE_START;
+        OptionPanel.add(Yes,layoutOptionPanel);
+
+        No = new JButton("No");
+        No.addActionListener(escucha);
+        No.setBorderPainted(false);
+        No.setContentAreaFilled(false);
+        layoutOptionPanel.gridx = 1;
+        layoutOptionPanel.gridy = 2;
+        layoutOptionPanel.gridwidth = 1;
+        layoutOptionPanel.fill = GridBagConstraints.NONE;
+        layoutOptionPanel.anchor = GridBagConstraints.LINE_END;
+        OptionPanel.add(No,layoutOptionPanel);
+        timer = new Timer(1000, escucha);
+        revalidate();
+        repaint();
+    }
+
+    public void ContinueLevel() {
+        String textoFinal = "";
+        int aciertos = controller.getAciertos();
+        int porcentaje = controller.HitPercentage();
+        player.setNivelesAprobados();
+        if (controller.getApruebaNivel()) {
+            textoFinal = "\n               Has superado el nivel. \n   Número de aciertos: " + aciertos +
+                    "\n   porcentaje: " + porcentaje + "%";
+        } else {
+            textoFinal = "\n               No has superado el nivel. \n   Número de aciertos: " + aciertos +
+                    "\n   porcentaje: " + porcentaje + "%";
+        }
+        Message.setText(textoFinal);
+        layoutLoadGame.gridx = 0;
+        layoutLoadGame.gridy = 0;
+        layoutLoadGame.gridwidth = 1;
+        layoutLoadGame.fill = GridBagConstraints.NONE;
+        layoutLoadGame.anchor = GridBagConstraints.CENTER;
+        PanelGame.add(Message, layoutLoadGame);
+        StartGame.setVisible(true);
+        System.out.println(textoFinal);
+        revalidate();
+        repaint();
+    }
 
     /** Main */
     public static void main(String[] args){
@@ -393,8 +525,8 @@ public class GUI extends JFrame {
             if (e.getSource()==NewGame){
                 remove(OpeningPanel);
                 NewGamePanel();
-                add(GamePanel);
-
+                revalidate();
+                repaint();
             }
             if(e.getSource()==ContinueButton){
                 fileManager = new FileManager();
@@ -430,7 +562,7 @@ public class GUI extends JFrame {
             }
             if(e.getSource() == StartGame){
                 remove(SelectUser);
-                ComponentesPanelGame();
+                Components();
                 WordLabel.setText(controller.getPalabrasMemorizar());
                 StartGame.setVisible(false);
                 fase = 1;
@@ -444,7 +576,7 @@ public class GUI extends JFrame {
                 counter++;
 
                 if (fase == 1) {
-                    if (counter > 5) {
+                    if (counter > 1) {
                         WordLabel.setText(controller.getPalabrasMemorizar());
                         counter = 0;
                     }
@@ -453,9 +585,46 @@ public class GUI extends JFrame {
                         PanelGame.removeAll();
                         revalidate();
                         repaint();
+                        Instructions();
                     }
                 }
-            }   
+                if (fase == 2) {
+                    if (counter > 7) {
+                        WordLabel.setText(controller.getPalabrasAleatorias());
+                        counter = 0;
+                    }
+                    if (Objects.equals(WordLabel.getText(), "")) {
+                        timer.stop();
+                        PanelGame.removeAll();
+                        revalidate();
+                        repaint();
+                        ContinueLevel();
+                    }
+                }
+            }
+            if (e.getSource() == Yes) {
+                controller.validarPalabraCorrecta(WordLabel.getText());
+                WordLabel.setText(controller.getPalabrasAleatorias());
+                counter = 1;
+                revalidate();
+                repaint();
+            }
+            if (e.getSource() == No) {
+                controller.validarPalabraIncorrecta(WordLabel.getText());
+                WordLabel.setText(controller.getPalabrasAleatorias());
+                counter = 1;
+                revalidate();
+                repaint();
+            }
+            if (e.getSource() == Continue) {
+                remove(PanelGame);
+                Components2();
+                revalidate();
+                repaint();
+                WordLabel.setText(controller.getPalabrasAleatorias());
+                fase = 2;
+                timer.start();
+            }
         }
     }
 }

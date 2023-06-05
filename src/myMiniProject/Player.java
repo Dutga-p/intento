@@ -7,7 +7,8 @@ public class Player {
     private FileManager fileManager;
     private String userName;
     private ArrayList<String> PlayerLists;
-    private int position;
+    private int position,nivelesAprobados;
+    private Controller controller = new Controller();
 
     public Player(String name){
         userName = name;
@@ -53,16 +54,17 @@ public class Player {
                 position=i;
                 break;
             }
-
             i++;
         }
         return position;
     }
+
     public int getNivelDelJugador(){
         String usuario= PlayerLists.get(buscarJugador());
         String nivelesEnString=usuario.substring(usuario.lastIndexOf("=")+1);
         return Integer.parseInt(nivelesEnString);
     }
+
     public int setNivelDelJugador(){
         if(getNivelDelJugador()<10){
             fileManager.actualizarNivel(buscarJugador(),getNivelDelJugador()+1);
@@ -70,5 +72,17 @@ public class Player {
             fileManager.actualizarNivel(buscarJugador(),0);
         }
         return getNivelDelJugador();
+    }
+    public void setNivelesAprobados() {
+        if (controller.Hits >= controller.WordsPerLevel * controller.HitPercentage) {
+            nivelesAprobados = setNivelDelJugador();
+            controller.LevelCounter = true;
+            controller.setNivelActual();
+            controller.Counter = 0;
+        } else {
+            controller.LevelCounter = false;
+            controller.Counter = 0;
+            controller.setNivelActual();
+        }
     }
 }

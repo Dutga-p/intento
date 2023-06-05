@@ -7,7 +7,7 @@ public class Controller {
     private Words words;
 
     private ArrayList<String> palabrasAMostrar = new ArrayList<>();
-    private boolean LevelCounter;
+    public boolean LevelCounter;
     int CurrentLevel, WordsPerLevel, Hits, Counter = 0;
     double HitPercentage;
     private ArrayList<String> CorrectWords = new ArrayList<>();
@@ -20,9 +20,10 @@ public class Controller {
     public Controller() {
         CurrentLevel = 1;
         setNivelActual();
+        LevelCounter = false;
     }
 
-    private void setNivelActual() {
+    public void setNivelActual() {
         words = new Words();
         Hits = 0;
         if (getApruebaNivel()) {
@@ -48,7 +49,6 @@ public class Controller {
             case 9-> WordsPerLevel =140;
             case 10-> WordsPerLevel =200;
         }
-
     }
 
     private void miArraydePalabrasAleatorias() {
@@ -74,7 +74,6 @@ public class Controller {
             case 6 -> HitPercentage = 0.85;
             case 7, 8 -> HitPercentage = 0.9;
             case 9 -> HitPercentage = 0.95;
-
         }
     }
 
@@ -86,12 +85,45 @@ public class Controller {
         }
         return palabraMemorizar;
     }
-
-    public boolean getApruebaNivel() {
-        return LevelCounter;
+    public String getPalabrasAleatorias() {
+        String palabraAleatoria = "";
+        if (Counter < arrayDePalabrasAleatorias.size()) {
+            palabraAleatoria = arrayDePalabrasAleatorias.get(Counter);
+            int auxIndice = arrayDePalabrasAleatorias.indexOf(palabraAleatoria);
+            arrayDePalabrasAleatorias.remove(auxIndice);
+        }
+        return palabraAleatoria;
     }
 
-    public int getNivelActual() {
-        return CurrentLevel;
+    public void validarPalabraCorrecta(String palabra) {
+
+        int i = 0;
+        while (i < CorrectWords.size()) {
+            String elementoListCorrecta = CorrectWords.get(i);
+            if (elementoListCorrecta.equals(palabra)) {
+                Hits++;
+                break;
+            }
+            i++;
+        }
     }
+    public void validarPalabraIncorrecta(String palabra) {
+        int i = 0, arraListPalabrasIncorrectasSize = WrongWordlist.size();
+        while (i < arraListPalabrasIncorrectasSize) {
+            String elementoListIncorrecta = WrongWordlist.get(i);
+            if (elementoListIncorrecta.equals(palabra)) {
+                Hits++;
+                break;
+            }
+            i++;
+        }
+    }
+
+    public int getAciertos() {return Hits;}
+
+    public boolean getApruebaNivel() {return LevelCounter;}
+
+    public int HitPercentage() {return ((Hits * 100) / WordsPerLevel);}
+
+    public int getNivelActual() {return CurrentLevel;}
 }
