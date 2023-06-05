@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Objects;
 
 
 /**
@@ -24,19 +25,22 @@ public class GUI extends JFrame {
             +"\n la primera lista y cuales no, por cada nivel el numero de"
             +"\n palabras se ira duplicando consecutivamente. !SUERTE¡";
 
-    private JButton Instructions,Exit,ContinueButton,NewGame,botonOK,Back,volverButton,seleccionarButton;
-    private JPanel OpeningPanel,GamePanel,panelSeleccionUsuario;
-    private JLabel labelUsername,Aviso;
-    private JTextField entradaUsuario;
+    private JButton Instructions,Exit,ContinueButton,NewGame,OK,Back,BackButton,SelectButton,StartGame;
+    private JPanel OpeningPanel,GamePanel,SelectUser,Words,PanelGame;
+    private JLabel labelUsername,Ad,Level,Time,WordLabel;
+    private JTextField Box;
 
     private Escucha escucha;
     private Header header;
     private Player player;
     private GridBagConstraints constraints,layoutPanelGame,layoutLoadGame,layout;
     private FileManager fileManager;
-    private DefaultListModel<String> usuariosModel;
     private JScrollPane scrollPane;
+    private Controller controller = new Controller();
     private GUI gui;
+    public String name;
+    private Timer timer;
+    private int counter,fase;
 
 
     /**
@@ -58,7 +62,7 @@ public class GUI extends JFrame {
      */
     private void initGUI() {
         //Set up JFrame Container's Layout
-        setLayout(new GridBagLayout());
+        this.setLayout(new GridBagLayout());
         constraints = new GridBagConstraints();
 
         /**
@@ -156,7 +160,7 @@ public class GUI extends JFrame {
     public void NewGamePanel(){
         GamePanel = new JPanel();
         GamePanel.setLayout(new GridBagLayout());
-        layoutPanelGame = new GridBagConstraints(); // panelGame layout component
+        layoutPanelGame = new GridBagConstraints(); // PanelGame layout component
         GamePanel.setPreferredSize(new Dimension(600, 400));
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -174,28 +178,28 @@ public class GUI extends JFrame {
         GamePanel.add(labelUsername, layoutPanelGame);
 
         // TextField input box
-        entradaUsuario = new JTextField();
-        entradaUsuario.setPreferredSize(new Dimension(250, 40));
-        entradaUsuario.setFont(new Font("Arial ", Font.PLAIN, 30));
+        Box = new JTextField();
+        Box.setPreferredSize(new Dimension(250, 40));
+        Box.setFont(new Font("Arial ", Font.PLAIN, 30));
         layoutPanelGame.gridx = 0;
         layoutPanelGame.gridy = 1;
         layoutPanelGame.gridwidth = 1;
         layoutPanelGame.fill = GridBagConstraints.NONE;
         layoutPanelGame.anchor = GridBagConstraints.LINE_END;
-        GamePanel.add(entradaUsuario, layoutPanelGame);
+        GamePanel.add(Box, layoutPanelGame);
 
         // Confirmation button
-        botonOK = new JButton("Aceptar");
-        botonOK.addActionListener(escucha);
-        botonOK.setPreferredSize(new Dimension(100, 100));
-        botonOK.setBorderPainted(false);
-        botonOK.setContentAreaFilled(false);
+        OK = new JButton("Aceptar");
+        OK.addActionListener(escucha);
+        OK.setPreferredSize(new Dimension(100, 100));
+        OK.setBorderPainted(false);
+        OK.setContentAreaFilled(false);
         layoutPanelGame.gridx = 1;
         layoutPanelGame.gridy = 1;
         layoutPanelGame.gridwidth = 1;
         layoutPanelGame.fill = GridBagConstraints.NONE;
         layoutPanelGame.anchor = GridBagConstraints.LINE_START;
-        GamePanel.add(botonOK, layoutPanelGame);
+        GamePanel.add(OK, layoutPanelGame);
 
 
         Back = new JButton("Atras");
@@ -213,60 +217,57 @@ public class GUI extends JFrame {
         repaint();
     }
     public void LoadGame(){
-        panelSeleccionUsuario = new JPanel();
-        panelSeleccionUsuario.setLayout(new GridBagLayout());
-        layoutLoadGame = new GridBagConstraints(); // panelGame layout component
+        SelectUser = new JPanel();
+        SelectUser.setLayout(new GridBagLayout());
+        layoutLoadGame = new GridBagConstraints(); // PanelGame layout component
         layoutLoadGame.gridx = 0;
         layoutLoadGame.gridy = 0;
         layoutLoadGame.insets = new Insets(10, 10, 10, 10);
-        panelSeleccionUsuario.setPreferredSize(new Dimension(600, 400));
+        SelectUser.setPreferredSize(new Dimension(600, 400));
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.CENTER;
-        this.add(panelSeleccionUsuario, constraints);
-
-
-
+        this.add(SelectUser, constraints);
 
         fileManager = new FileManager();
         JList<String> usuariosList = new JList<>(fileManager.NombreYNivel());
         usuariosList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         layoutLoadGame = new GridBagConstraints();
-        Aviso = new JLabel("Seleciona tu Usuario");
-        Aviso.setPreferredSize(new Dimension(100, 200));
+        Ad = new JLabel("Seleciona tu Usuario");
+        Ad.setPreferredSize(new Dimension(100, 200));
         layoutLoadGame.gridx = 0;
         layoutLoadGame.gridy = 1;
         layoutLoadGame.gridwidth = 2;
         layoutLoadGame.fill = GridBagConstraints.NONE;
         layoutLoadGame.anchor = GridBagConstraints.CENTER;
-        panelSeleccionUsuario.add(Aviso, layoutLoadGame);
+        SelectUser.add(Ad, layoutLoadGame);
 
-        volverButton = new JButton("Volver");
-        volverButton.addActionListener(escucha);
-        volverButton.setPreferredSize(new Dimension(100, 100));
-        volverButton.setBorderPainted(false);
-        volverButton.setContentAreaFilled(false);
+        BackButton = new JButton("Volver");
+        BackButton.addActionListener(escucha);
+        BackButton.setPreferredSize(new Dimension(100, 100));
+        BackButton.setBorderPainted(false);
+        BackButton.setContentAreaFilled(false);
         layoutLoadGame.gridx = 1;
         layoutLoadGame.gridy = 3;
         layoutLoadGame.gridwidth = 1;
         layoutLoadGame.fill = GridBagConstraints.NONE;
         layoutLoadGame.anchor = GridBagConstraints.CENTER;
-        panelSeleccionUsuario.add(volverButton, layoutLoadGame);
+        SelectUser.add(BackButton, layoutLoadGame);
 
-        seleccionarButton = new JButton("Seleccionar");
-        seleccionarButton.addActionListener(escucha);
-        seleccionarButton.setPreferredSize(new Dimension(100, 100));
-        seleccionarButton.setBorderPainted(false);
-        seleccionarButton.setContentAreaFilled(false);
+        SelectButton = new JButton("Seleccionar");
+        SelectButton.addActionListener(escucha);
+        SelectButton.setPreferredSize(new Dimension(100, 100));
+        SelectButton.setBorderPainted(false);
+        SelectButton.setContentAreaFilled(false);
         layoutLoadGame.gridx = 2;
         layoutLoadGame.gridy = 3;
         layoutLoadGame.gridwidth = 1;
         layoutLoadGame.fill = GridBagConstraints.NONE;
         layoutLoadGame.anchor = GridBagConstraints.CENTER;
-        panelSeleccionUsuario.add(seleccionarButton, layoutLoadGame);
+        SelectUser.add(SelectButton, layoutLoadGame);
 
         scrollPane = new JScrollPane(usuariosList);
         layoutLoadGame.gridx = 1;
@@ -275,23 +276,113 @@ public class GUI extends JFrame {
         layoutLoadGame.fill = GridBagConstraints.BOTH;
         layoutLoadGame.weightx = 1.0;
         layoutLoadGame.weighty = 1.0;
-        panelSeleccionUsuario.add(scrollPane, layoutLoadGame);
+        SelectUser.add(scrollPane, layoutLoadGame);
     }
 
-    /**
-     * Main process of the Java program
-     * @param args Object used in order to send input data from command line when
-     *             the program is execute by console.
-     */
+    public void Welcome(){
+        SelectUser = new JPanel();
+        SelectUser.setLayout(new GridBagLayout());
+        layoutLoadGame = new GridBagConstraints(); // PanelGame layout component
+        layoutLoadGame.gridx = 0;
+        layoutLoadGame.gridy = 0;
+        layoutLoadGame.insets = new Insets(10, 10, 10, 10);
+        SelectUser.setPreferredSize(new Dimension(600, 400));
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 2;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.CENTER;
+        this.add(SelectUser, constraints);
+
+        layoutLoadGame = new GridBagConstraints();
+        Ad = new JLabel("Bienvenido "+name+" es hora de poner a prueba tu capacidad de memorizar");
+        Ad.setPreferredSize(new Dimension(500, 200));
+        layoutLoadGame.gridx = 1;
+        layoutLoadGame.gridy = 1;
+        layoutLoadGame.gridwidth = 3;
+        layoutLoadGame.fill = GridBagConstraints.BOTH;
+        layoutLoadGame.anchor = GridBagConstraints.CENTER;
+        SelectUser.add(Ad, layoutLoadGame);
+
+        StartGame = new JButton("Comenzar");
+        StartGame.addActionListener(escucha);
+        StartGame.setPreferredSize(new Dimension(100, 100));
+        StartGame.setBorderPainted(false);
+        StartGame.setContentAreaFilled(false);
+        layoutLoadGame.gridx = 3;
+        layoutLoadGame.gridy = 3;
+        layoutLoadGame.gridwidth = 1;
+        layoutLoadGame.fill = GridBagConstraints.NONE;
+        layoutLoadGame.anchor = GridBagConstraints.CENTER;
+        SelectUser.add(StartGame, layoutLoadGame);
+    }
+    public void ComponentesPanelGame() {
+
+        PanelGame = new JPanel();
+        PanelGame.setLayout(new GridBagLayout());
+        layoutLoadGame = new GridBagConstraints(); // PanelGame layout component
+        layoutLoadGame.gridx = 0;
+        layoutLoadGame.gridy = 0;
+        layoutLoadGame.insets = new Insets(10, 10, 10, 10);
+        PanelGame.setPreferredSize(new Dimension(600, 400));
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 2;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.CENTER;
+        this.add(PanelGame, constraints);
+
+        Level = new JLabel("NIVEL: " + Integer.toString(controller.getNivelActual()));
+        Level.setFont(new Font("Impact", Font.PLAIN, 27));
+        layoutLoadGame.gridx = 0;
+        layoutLoadGame.gridy = 0;
+        layoutLoadGame.gridwidth = 1;
+        layoutLoadGame.fill = GridBagConstraints.NONE;
+        layoutLoadGame.anchor = GridBagConstraints.LINE_START;
+        PanelGame.add(Level, layoutLoadGame);
+
+        Time = new JLabel("00:00");
+        Time.setFont(new Font("Impact", Font.PLAIN, 27));
+        layoutLoadGame.gridx = 4;
+        layoutLoadGame.gridy = 0;
+        layoutLoadGame.gridwidth = 1;
+        layoutLoadGame.fill = GridBagConstraints.NONE;
+        layoutLoadGame.anchor = GridBagConstraints.LINE_END;
+        PanelGame.add(Time, layoutLoadGame);
+
+        Words = new JPanel(new GridBagLayout());
+        GridBagConstraints layoutPanelPalabras = new GridBagConstraints();
+        Words.setPreferredSize(new Dimension(500, 350));
+        Words.setOpaque(false);
+        layoutLoadGame.gridx = 0;
+        layoutLoadGame.gridy = 1;
+        layoutLoadGame.gridwidth = 2;
+        layoutLoadGame.fill = GridBagConstraints.NONE;
+        layoutLoadGame.anchor = GridBagConstraints.CENTER;
+        PanelGame.add(Words, layoutLoadGame);
+
+        /*Cambiar nombre variable*/ WordLabel = new JLabel();
+        WordLabel.setFont(new Font("Impact", Font.PLAIN, 60));
+        layoutPanelPalabras.gridx = 0;
+        layoutPanelPalabras.gridy = 0;
+        layoutPanelPalabras.gridwidth = 1;
+        layoutPanelPalabras.fill = GridBagConstraints.NONE;
+        layoutPanelPalabras.anchor = GridBagConstraints.CENTER;
+        Words.add(WordLabel, layoutPanelPalabras);
+
+        timer = new Timer(1000, escucha);
+        revalidate();
+        repaint();
+    }
+
+    /** Main */
     public static void main(String[] args){
         EventQueue.invokeLater(() -> {
             GUI miProjectGUI = new GUI();
         });
     }
 
-    /**
-     * inner class that extends an Adapter Class or implements Listeners used by GUI class
-     */
+    /** inner class that extends an Adapter Class or implements Listeners used by GUI class */
     private class Escucha  implements ActionListener {
 
         @Override
@@ -317,11 +408,11 @@ public class GUI extends JFrame {
                     repaint();
                 }
             }
-            if(e.getSource()==Back){
-                gui.main(null);
-            }
-            if(e.getSource() == botonOK){
-                String name = entradaUsuario.getText();
+            if(e.getSource()==BackButton){gui.main(null);}
+            if(e.getSource()==SelectButton){}
+            if(e.getSource()==Back){gui.main(null);}
+            if(e.getSource() == OK){
+                name = Box.getText();
                 player = new Player(name);
                 if(name.isEmpty()){
                     JOptionPane.showMessageDialog(GamePanel, "Necesitas un nombre de usuario", "Error", JOptionPane.ERROR_MESSAGE);
@@ -332,7 +423,39 @@ public class GUI extends JFrame {
                         player.registrarJugador();
                     }
                 }
+                remove(GamePanel);
+                Welcome();
+                revalidate();
+                repaint();
             }
+            if(e.getSource() == StartGame){
+                remove(SelectUser);
+                ComponentesPanelGame();
+                WordLabel.setText(controller.getPalabrasMemorizar());
+                StartGame.setVisible(false);
+                fase = 1;
+                counter = 1;
+                timer.start();
+                revalidate();
+                repaint();
+            }
+            if (e.getSource() == timer) {
+                Time.setText("00:0" + counter);
+                counter++;
+
+                if (fase == 1) {
+                    if (counter > 5) {
+                        WordLabel.setText(controller.getPalabrasMemorizar());
+                        counter = 0;
+                    }
+                    if (WordLabel.getText() == "") {
+                        timer.stop();
+                        PanelGame.removeAll();
+                        revalidate();
+                        repaint();
+                    }
+                }
+            }   
         }
     }
 }

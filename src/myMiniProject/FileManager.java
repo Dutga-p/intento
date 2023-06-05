@@ -1,4 +1,5 @@
 package myMiniProject;
+
 import javax.swing.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -10,15 +11,15 @@ public class FileManager {
     private FileReader fileReader;
     private BufferedReader input;
     private BufferedWriter output;
-    public static final String usuariosListados = "src/FilesTxt/Users.txt";
-    public static final String bancoDePalabras = "src/myProject/files/TwoHuundredWords.txt";
-    private ArrayList users,words;
+    public static final String UserLists = "src/FilesTxt/Users.txt";
+    public static final String WordLists = "src/FilesTxt/TwoHundredWords.txt";
+    private ArrayList<String> users,words;
     private ArrayList<String> NombreYNivel;
     private DefaultListModel usuariosModel;
     public void escribirTexto(String linea) {
         try
         {
-            fileWriter = new FileWriter(usuariosListados, true);
+            fileWriter = new FileWriter(UserLists, true);
             output = new BufferedWriter(fileWriter);
             output.write(linea);
             output.newLine();
@@ -38,12 +39,11 @@ public class FileManager {
         }
     }
     public ArrayList<String> leerPalabras(){
-        String PalabrasLeidas = bancoDePalabras;
-        users = new ArrayList<>();
+        words = new ArrayList<>();
         try
         {
             //To allows reading of UTF-8. Unicode and ISO 10646 character encoding format
-            fileReader = new FileReader(PalabrasLeidas, StandardCharsets.UTF_8);
+            fileReader = new FileReader(WordLists, StandardCharsets.UTF_8);
             input = new BufferedReader(fileReader);
             String line = input.readLine();
             while (line != null)
@@ -71,7 +71,7 @@ public class FileManager {
         return words;
     }
     public  ArrayList<String> leerUsuarios(){
-        String ArchivoLeido = usuariosListados;
+        String ArchivoLeido = UserLists;
         users = new ArrayList<>();
         try
         {
@@ -108,9 +108,34 @@ public class FileManager {
         NombreYNivel = leerUsuarios();
         for (int i = 0; i < NombreYNivel.size() && !Objects.equals(NombreYNivel.get(i), " "); i++)
         {
-            String Jugador = NombreYNivel.get(i).substring(0, NombreYNivel.get(i).lastIndexOf(":"))+" Nivel "+ NombreYNivel.get(i).substring(0, NombreYNivel.get(i).indexOf(":"));
-            usuariosModel.addElement(Jugador);
+            String eachUser = NombreYNivel.get(i);
+            String[] datosUsuario = eachUser.split(":");
+            String name = datosUsuario[0];
+            String level = datosUsuario[1];
+            String Player = name + " nivel "+ level;
+            usuariosModel.addElement(Player);
         }
         return usuariosModel;
+    }
+    public void actualizarNivel(int posicion, int nivelNuevo)
+    {
+        try {
+            ArrayList<String> usuariosActualizados = leerUsuarios();
+            String usuarioAntiguo = usuariosActualizados.get(posicion);
+            String usuarioActualizado = usuarioAntiguo.substring(0, usuarioAntiguo.lastIndexOf("=") + 1) + nivelNuevo;
+            usuariosActualizados.remove(posicion);
+            usuariosActualizados.add(posicion, usuarioActualizado);
+            fileWriter = new FileWriter(UserLists, false);
+            output = new BufferedWriter(fileWriter);
+            for (String usuariosActualizado : usuariosActualizados) {
+                output.write(usuariosActualizado);
+                output.newLine();
+
+            }
+            output.close();
+        }catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }
